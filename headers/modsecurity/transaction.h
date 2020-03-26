@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -37,7 +37,7 @@
 #ifndef __cplusplus
 typedef struct ModSecurity_t ModSecurity;
 typedef struct Transaction_t Transaction;
-typedef struct Rules_t Rules;
+typedef struct Rules_t RulesSet;
 #endif
 
 #include "modsecurity/anchored_set_variable.h"
@@ -98,7 +98,7 @@ namespace modsecurity {
 
 class ModSecurity;
 class Transaction;
-class Rules;
+class RulesSet;
 class RuleMessage;
 namespace actions {
 class Action;
@@ -288,10 +288,14 @@ class TransactionAnchoredVariables {
 /** @ingroup ModSecurity_CPP_API */
 class Transaction : public TransactionAnchoredVariables {
  public:
-    Transaction(ModSecurity *transaction, Rules *rules, void *logCbData);
-    Transaction(ModSecurity *transaction, Rules *rules, char *id,
+    Transaction(ModSecurity *transaction, RulesSet *rules, void *logCbData);
+    Transaction(ModSecurity *transaction, RulesSet *rules, char *id,
         void *logCbData);
     ~Transaction();
+
+    Transaction ( const Transaction & ) = delete;
+    bool operator ==(const Transaction &b) const { return false; };
+    Transaction &operator =(const Transaction &b) const = delete;
 
     /** TODO: Should be an structure that fits an IP address */
     int processConnection(const char *client, int cPort,
@@ -355,7 +359,7 @@ class Transaction : public TransactionAnchoredVariables {
     bool extractArguments(const std::string &orig, const std::string& buf,
         size_t offset);
 
-    const char *getResponseBody();
+    const char *getResponseBody() const;
     size_t getResponseBodyLength();
     size_t getRequestBodyLength();
 
@@ -364,7 +368,7 @@ class Transaction : public TransactionAnchoredVariables {
 #endif
     void serverLog(std::shared_ptr<RuleMessage> rm);
 
-    int getRuleEngineState();
+    int getRuleEngineState() const;
 
     std::string toJSON(int parts);
     std::string toOldAuditLogFormat(int parts, const std::string &trailer);
@@ -455,7 +459,7 @@ class Transaction : public TransactionAnchoredVariables {
     /**
      * Rules object utilized during this specific transaction.
      */
-    Rules *m_rules;
+    RulesSet *m_rules;
 
     /**
      *
@@ -600,11 +604,11 @@ extern "C" {
 
 /** @ingroup ModSecurity_C_API */
 Transaction *msc_new_transaction(ModSecurity *ms,
-    Rules *rules, void *logCbData);
+    RulesSet *rules, void *logCbData);
 
 /** @ingroup ModSecurity_C_API */
 Transaction *msc_new_transaction_with_id(ModSecurity *ms,
-    Rules *rules, char *id, void *logCbData);
+    RulesSet *rules, char *id, void *logCbData);
 
 /** @ingroup ModSecurity_C_API */
 int msc_process_connection(Transaction *transaction,

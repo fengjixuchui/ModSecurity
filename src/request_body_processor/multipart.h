@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -58,11 +58,19 @@ class MultipartPart {
  public:
     MultipartPart()
      : m_type(MULTIPART_FORMDATA),
-     m_tmp_file_fd(0),
-     m_offset(0),
-     m_filenameOffset(0),
+     m_name(""),
      m_nameOffset(0),
+     m_value(""),
      m_valueOffset(0),
+     m_value_parts(),
+     m_tmp_file_name(""),
+     m_tmp_file_fd(0),
+     m_tmp_file_size(),
+     m_filename(""),
+     m_filenameOffset(0),
+     m_last_header_name(""),
+     m_headers(),
+     m_offset(0),
      m_length(0) {
          m_tmp_file_size.first = 0;
          m_tmp_file_size.second = 0;
@@ -109,14 +117,14 @@ class MultipartPart {
 
 class Multipart {
  public:
-    Multipart(std::string header, Transaction *transaction);
+    Multipart(const std::string &header, Transaction *transaction);
     ~Multipart();
 
     bool init(std::string *err);
 
-    int boundary_characters_valid(const char *boundary);
-    int count_boundary_params(const std::string& str_header_value);
-    int is_token_char(unsigned char c);
+    static int boundary_characters_valid(const char *boundary);
+    static int count_boundary_params(const std::string& str_header_value);
+    static int is_token_char(unsigned char c);
     int multipart_complete(std::string *err);
 
     int parse_content_disposition(const char *c_d_value, int offset);

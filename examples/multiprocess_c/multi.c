@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 #include <modsecurity/modsecurity.h>
 #include <modsecurity/transaction.h>
-#include <modsecurity/rules.h>
+#include <modsecurity/rules_set.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,12 +24,13 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
+
 #define FORKS 5
 #define REQUESTS_PER_PROCESS 100
 
 
 char main_rule_uri[] = "basic_rules.conf";
-Rules *rules = NULL;
+RulesSet *rules = NULL;
 ModSecurity *modsec = NULL;
 
 

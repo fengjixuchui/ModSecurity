@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -152,9 +152,9 @@ void Base64::decode_forgiven_engine(unsigned char *plain_text,
         ch = b64_reverse_t[ch];
         if (ch < 0) {
             continue;
-        } else if (ch == -2) {
+        /*} else if (ch == -2) {
             *aiming_size = 0;
-            return;
+            return;*/
         }
         switch (i % 4) {
             case 0:

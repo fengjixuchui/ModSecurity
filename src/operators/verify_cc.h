@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -35,7 +35,6 @@ class VerifyCC : public Operator {
         m_pce(NULL) { }
     ~VerifyCC();
 
-    int luhnVerify(const char *ccnumber, int len);
     bool evaluate(Transaction *t, Rule *rule,
         const std::string& input,
         std::shared_ptr<RuleMessage> ruleMessage)  override;
@@ -43,6 +42,7 @@ class VerifyCC : public Operator {
  private:
     pcre *m_pc;
     pcre_extra *m_pce;
+    static int luhnVerify(const char *ccnumber, int len);
 };
 
 }  // namespace operators

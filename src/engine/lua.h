@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -53,7 +53,7 @@ class LuaScriptBlob {
     }
 
 
-    const char *read(size_t *len) {
+    const char *read(size_t *len) const {
         *len = m_len;
         return (const char *)m_data;
     }
@@ -68,9 +68,9 @@ class Lua {
  public:
     Lua() { }
 
-    bool load(std::string script, std::string *err);
-    int run(Transaction *t);
-    static bool isCompatible(std::string script, Lua *l, std::string *error);
+    bool load(const std::string &script, std::string *err);
+    int run(Transaction *t, const std::string &str="");
+    static bool isCompatible(const std::string &script, Lua *l, std::string *error);
 
 #ifdef WITH_LUA
     static int blob_keeper(lua_State *L, const void *p, size_t sz, void *ud);

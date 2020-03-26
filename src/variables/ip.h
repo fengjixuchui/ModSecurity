@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -29,12 +29,12 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 
 class Ip_DictElement : public Variable {
  public:
-    explicit Ip_DictElement(std::string dictElement)
+    explicit Ip_DictElement(const std::string &dictElement)
         : Variable("IP:" + dictElement),
         m_dictElement("IP:" + dictElement) { }
 
@@ -67,7 +67,7 @@ class Ip_NoDictElement : public Variable {
 
 class Ip_DictElementRegexp : public VariableRegex {
  public:
-    explicit Ip_DictElementRegexp(std::string dictElement)
+    explicit Ip_DictElementRegexp(const std::string &dictElement)
         : VariableRegex("IP", dictElement),
         m_dictElement(dictElement) { }
 
@@ -99,14 +99,14 @@ class Ip_DynamicElement : public Variable {
             t->m_rules->m_secWebAppId.m_value, l, m_keyExclusion);
     }
 
-    void del(Transaction *t, std::string k) {
+    static void del(Transaction *t, const std::string &k) {
         t->m_collections.m_ip_collection->del(k,
             t->m_collections.m_ip_collection_key,
             t->m_rules->m_secWebAppId.m_value);
     }
 
-    void storeOrUpdateFirst(Transaction *t, std::string var,
-        std::string value) {
+    static void storeOrUpdateFirst(Transaction *t, const std::string &var,
+        const std::string &value) {
         t->m_collections.m_ip_collection->storeOrUpdateFirst(
             var, t->m_collections.m_ip_collection_key,
             t->m_rules->m_secWebAppId.m_value,
@@ -117,7 +117,7 @@ class Ip_DynamicElement : public Variable {
 };
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_IP_H_

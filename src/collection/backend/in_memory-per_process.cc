@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -36,7 +36,7 @@ namespace collection {
 namespace backend {
 
 
-InMemoryPerProcess::InMemoryPerProcess(std::string name) :
+InMemoryPerProcess::InMemoryPerProcess(const std::string &name) :
     Collection(name) {
     this->reserve(1000);
     pthread_mutex_init(&m_lock, NULL);
@@ -96,7 +96,7 @@ void InMemoryPerProcess::resolveSingleMatch(const std::string& var,
 
 
 void InMemoryPerProcess::resolveMultiMatches(const std::string& var,
-    std::vector<const VariableValue *> *l, Variables::KeyExclusions &ke) {
+    std::vector<const VariableValue *> *l, variables::KeyExclusions &ke) {
     size_t keySize = var.size();
     l->reserve(15);
 
@@ -122,7 +122,7 @@ void InMemoryPerProcess::resolveMultiMatches(const std::string& var,
 
 
 void InMemoryPerProcess::resolveRegularExpression(const std::string& var,
-    std::vector<const VariableValue *> *l, Variables::KeyExclusions &ke) {
+    std::vector<const VariableValue *> *l, variables::KeyExclusions &ke) {
 
     //if (var.find(":") == std::string::npos) {
     //    return;

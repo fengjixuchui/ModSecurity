@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -32,7 +32,7 @@ namespace actions {
 namespace transformations {
 
 
-UrlDecode::UrlDecode(std::string action)
+UrlDecode::UrlDecode(const std::string &action) 
     : Transformation(action) {
     this->action_kind = 1;
 }

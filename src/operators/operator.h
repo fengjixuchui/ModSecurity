@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -42,7 +42,7 @@ class Operator {
             }
         }
 
-    Operator(std::string opName, std::string param, bool negation)
+    Operator(const std::string &opName, const std::string &param, bool negation)
         : m_match_message(""),
         m_negation(negation),
         m_op(opName),
@@ -53,7 +53,7 @@ class Operator {
             }
         }
 
-    Operator(std::string opName, std::unique_ptr<RunTimeString> param,
+    Operator(const std::string &opName, std::unique_ptr<RunTimeString> param,
         bool negation)
         : m_match_message(""),
         m_negation(negation),
@@ -66,7 +66,7 @@ class Operator {
             }
         }
 
-    Operator(std::string opName, std::string param)
+    Operator(const std::string &opName, const std::string &param)
         : m_match_message(""),
         m_negation(false),
         m_op(opName),
@@ -77,7 +77,7 @@ class Operator {
             }
         }
 
-    Operator(std::string opName, std::unique_ptr<RunTimeString> param)
+    Operator(const std::string &opName, std::unique_ptr<RunTimeString> param)
         : m_match_message(""),
         m_negation(false),
         m_op(opName),
@@ -89,7 +89,7 @@ class Operator {
             }
         }
 
-    explicit Operator(std::string opName)
+    explicit Operator(const std::string &opName)
         : m_match_message(""),
         m_negation(false),
         m_op(opName),

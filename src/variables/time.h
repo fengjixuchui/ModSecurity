@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -27,11 +27,11 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 class Time : public Variable {
  public:
-    explicit Time(std::string _name)
+    explicit Time(const std::string &_name)
         : Variable(_name),
         m_retName("TIME") { }
 
@@ -41,7 +41,7 @@ class Time : public Variable {
     std::string m_retName;
 };
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_TIME_H_

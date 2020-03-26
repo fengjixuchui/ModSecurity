@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -31,7 +31,7 @@ namespace modsecurity {
 namespace actions {
 namespace transformations {
 
-HexEncode::HexEncode(std::string action)
+HexEncode::HexEncode(const std::string &action) 
     : Transformation(action) {
     this->action_kind = 1;
 }
@@ -41,7 +41,7 @@ std::string HexEncode::evaluate(std::string value,
 
     std::stringstream result;
     for (std::size_t i=0; i < value.length(); i++) {
-        int ii = reinterpret_cast<char>(value[i]);
+        unsigned int ii = (unsigned char)(value[i]);
         result << std::setw(2) << std::setfill('0') << std::hex << ii;
     }
 

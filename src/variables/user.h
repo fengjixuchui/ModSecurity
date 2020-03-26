@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -29,12 +29,12 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 
 class User_DictElement : public Variable {
  public:
-    explicit User_DictElement(std::string dictElement)
+    explicit User_DictElement(const std::string &dictElement)
         : Variable("USER:" + dictElement),
         m_dictElement("USER:" + dictElement) { }
 
@@ -67,7 +67,7 @@ class User_NoDictElement : public Variable {
 
 class User_DictElementRegexp : public VariableRegex {
  public:
-    explicit User_DictElementRegexp(std::string dictElement)
+    explicit User_DictElementRegexp(const std::string &dictElement)
         : VariableRegex("USER", dictElement),
         m_dictElement(dictElement) { }
 
@@ -99,14 +99,14 @@ class User_DynamicElement : public Variable {
             t->m_rules->m_secWebAppId.m_value, l, m_keyExclusion);
     }
 
-    void del(Transaction *t, std::string k) {
+    static void del(Transaction *t, const std::string &k) {
         t->m_collections.m_user_collection->del(k,
             t->m_collections.m_user_collection_key,
             t->m_rules->m_secWebAppId.m_value);
     }
 
-    void storeOrUpdateFirst(Transaction *t, std::string var,
-        std::string value) {
+    static void storeOrUpdateFirst(Transaction *t, const std::string &var,
+        const std::string &value) {
         t->m_collections.m_user_collection->storeOrUpdateFirst(
             var, t->m_collections.m_user_collection_key,
             t->m_rules->m_secWebAppId.m_value,
@@ -117,7 +117,7 @@ class User_DynamicElement : public Variable {
 };
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_USER_H_

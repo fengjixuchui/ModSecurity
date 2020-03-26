@@ -1,6 +1,74 @@
-v3.0.4 - YYYY-MMM-DD (to be released)
+v3.x.y - YYYY-MMM-DD (to be released)
 -------------------------------------
+ 
+  - Multipart Content-Dispostion should allow field: filename*=
+    [@martinhsv]
+  - Fix rule-update-target for non-regex
+    [Issue 2251 - @martinhsv]
+  - Fix configure script when packaging for Buildroot
+    [Issue 2235 - @frankvanbever]
+  - modsecurity.pc.in: add Libs.private
+    [Issue #1918, #2253 - @ffontaine, @Dridi, @victorhora]  
 
+v3.0.4 - 2020-Jan-13
+--------------------
+
+ - Support configurable limit on number of arguments processed
+   [@jleproust, @martinhsv]
+ - Fix: audit log data omitted when nolog,auditlog
+   [@martinhsv]
+ - Fix: ModSecurity 3.x inspectFile operator does not pass
+   FILES_TMPNAMES parameter to lua engine
+   [Issue #2204, #2205 - @kadirerdogan]
+ - XML: Remove error messages from stderr
+   [Issue #2010 - @JaiHarpalani, @zimmerle]
+ - Filter comment or blank line for pmFromFile operator
+   [Issue #1645 - @LeeShan87, @victorhora, @tdoubley]
+ - Additional adjustment to Cookie header parsing
+   [@martinhsv]
+ - Restore chained rule part H logging to be more like 2.9 behaviour
+   [Issue #2196 - @martinhsv]
+ - Small fixes in log messages to help debugging the file upload
+   [Issue #2130 - @airween]
+ - Fix Cookie header parsing issues
+   [Issue #2201 - @airween, @martinhsv]
+ - Fix rules with nolog are logging to part H
+   [Issue #2196 - @martinhsv]
+ - Fix argument key-value pair parsing cases
+   [Issue #1904 - @martinhsv]
+ - Fix: audit log part for response body for JSON format to be E
+   [Issue #2066 - @martinhsv, @zimmerle]
+ - Make sure m_rulesMessages is filled after successfull match
+   [Issue #2000, #2048 - @victorhora, @defanator]
+ - Fix @pm lookup for possible matches on offset zero.
+   [@zimmerle, @afoxdavidi, @martinhsv, @marshal09]
+ - Regex lookup on the key name instead of COLLECTION:key
+   [@rdiperri-yottaa, @danbiagini-work, @mmelo-yottaa, @zimmerle]
+ - Missing throw in Operator::instantiate
+   [Issue #2106 - @marduone]
+ - Making block action execution dependent of the SecEngine status
+   [Issue #2113, #2111 - @theMiddleBlue, @airween]
+ - Making block action execution dependent of the SecEngine status
+   [Issue #1960 - @theMiddleBlue, @zimmerle, @airween, @victorhora]
+ - Having body limits to respect the rule engine state
+   [@zimmerle]
+ - Fix SecRuleUpdateTargetById does not match regular expressions
+   [Issue #1872 - @zimmerle, @anush-cr, @victorhora, @j0k2r]  
+ - Adds missing check for runtime ctl:ruleRemoveByTag
+   [Issue #2102, #2099 - @airween]
+ - Adds a new operator verifySVNR that checks for Austrian social
+   security numbers.
+   [Issue #2063 - @Rufus125]
+ - Fix variables output in debug logs
+   [Issue #2057 - @jleproust]
+ - Correct typo validade in log output
+   [Issue #2059 - @nerrehmit]
+ - fix/minor: Error encoding hexa decimal.
+   [Issue #2068 - @tech-ozon-io]
+ - Limit more log variables to 200 characters.
+   [Issue #2073 - @jleproust]
+ - parser: fix parsed file names
+   [@zimmerle]
  - Allow empty anchored variable
    [Issue #2024 - @airween]
  - Fixed FILES_NAMES collection after the end of multipart parsing

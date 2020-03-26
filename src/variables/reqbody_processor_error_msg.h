@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -27,14 +27,14 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 
 DEFINE_VARIABLE(ReqbodyProcessorErrorMsg, PROCESSOR_ERROR_MSG,
     m_variableReqbodyProcessorErrorMsg)
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_REQBODY_PROCESSOR_ERROR_MSG_H_

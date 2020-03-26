@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -36,15 +36,15 @@
 #include <utility>
 
 #include "modsecurity/transaction.h"
-#include "modsecurity/rules_properties.h"
-#include "modsecurity/rules.h"
+#include "modsecurity/rules_set_properties.h"
+#include "modsecurity/rules_set.h"
 
 #include "src/request_body_processor/xml.h"
 #include "modsecurity/actions/action.h"
 #include "src/actions/xmlns.h"
 
 namespace modsecurity {
-namespace Variables {
+namespace variables {
 
 #ifndef WITH_LIBXML2
 void XML::evaluate(Transaction *t,
@@ -61,7 +61,7 @@ void XML::evaluate(Transaction *t,
     std::string param;
     const xmlChar* xpathExpr = NULL;
     int i;
-    size_t pos;
+    //size_t pos;
 
     param = m_name;
     /*
@@ -125,7 +125,7 @@ void XML::evaluate(Transaction *t,
             xmlNodeGetContent(nodes->nodeTab[i]));
         if (content != NULL) {
             std::string *a = new std::string(content);
-            VariableValue *var = new VariableValue(m_fullName,
+            VariableValue *var = new VariableValue(m_fullName.get(),
                 a);
             if (!m_keyExclusion.toOmit(*m_fullName)) {
                 l->push_back(var);
@@ -140,5 +140,5 @@ void XML::evaluate(Transaction *t,
 
 #endif
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity

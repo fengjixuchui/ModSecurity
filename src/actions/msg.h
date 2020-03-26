@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -33,7 +33,7 @@ namespace actions {
 
 class Msg : public Action {
  public:
-    explicit Msg(std::string action)
+    explicit Msg(const std::string &action) 
         : Action(action, RunTimeOnlyIfMatchKind) { }
 
     explicit Msg(std::unique_ptr<RunTimeString> z)

@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -45,7 +45,7 @@ enum SetVarOperation {
 class SetVar : public Action {
  public:
     SetVar(SetVarOperation operation,
-        std::unique_ptr<modsecurity::Variables::Variable> variable,
+        std::unique_ptr<modsecurity::variables::Variable> variable,
         std::unique_ptr<RunTimeString> predicate)
         : Action("setvar"),
         m_operation(operation),
@@ -53,7 +53,7 @@ class SetVar : public Action {
         m_string(std::move(predicate)) { }
 
     SetVar(SetVarOperation operation,
-        std::unique_ptr<modsecurity::Variables::Variable> variable)
+        std::unique_ptr<modsecurity::variables::Variable> variable)
         : Action("setvar"),
         m_operation(operation),
         m_variable(std::move(variable)) { }
@@ -63,7 +63,7 @@ class SetVar : public Action {
 
  private:
     SetVarOperation m_operation;
-    std::unique_ptr<modsecurity::Variables::Variable> m_variable;
+    std::unique_ptr<modsecurity::variables::Variable> m_variable;
     std::unique_ptr<RunTimeString> m_string;
 };
 

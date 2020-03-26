@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -15,9 +15,9 @@
 
 #include "src/parser/driver.h"
 
+#include "modsecurity/rules_set_properties.h"
 #include "src/parser/seclang-parser.hh"
 #include "modsecurity/audit_log.h"
-#include "modsecurity/rules_properties.h"
 
 using modsecurity::audit_log::AuditLog;
 using modsecurity::Rule;
@@ -26,7 +26,7 @@ namespace modsecurity {
 namespace Parser {
 
 Driver::Driver()
-  : RulesProperties(),
+  : RulesSetProperties(),
   trace_scanning(false),
   trace_parsing(false),
   lastRule(NULL) { }
@@ -45,7 +45,7 @@ int Driver::addSecMarker(std::string marker) {
     for (int i = 0; i < modsecurity::Phases::NUMBER_OF_PHASES; i++) {
         Rule *rule = new Rule(marker);
         rule->m_phase = i;
-        m_rules[i].push_back(rule);
+        m_rulesSetPhases.insert(rule);
     }
     return 0;
 }
@@ -58,14 +58,15 @@ int Driver::addSecAction(Rule *rule) {
         return false;
     }
 
-    m_rules[rule->m_phase].push_back(rule);
+
+    m_rulesSetPhases.insert(rule);
 
     return true;
 }
 
 
 int Driver::addSecRuleScript(RuleScript *rule) {
-    m_rules[rule->m_phase].push_back(rule);
+    m_rulesSetPhases.insert(rule);
     return true;
 }
 
@@ -118,9 +119,9 @@ int Driver::addSecRule(Rule *rule) {
         return false;
     }
     for (int i = 0; i < modsecurity::Phases::NUMBER_OF_PHASES; i++) {
-        std::vector<Rule *> rules = m_rules[i];
-        for (int j = 0; j < rules.size(); j++) {
-            if (rules[j]->m_ruleId == rule->m_ruleId) {
+        Rules *rules = m_rulesSetPhases[i];
+        for (int j = 0; j < rules->size(); j++) {
+            if (rules->at(j)->m_ruleId == rule->m_ruleId) {
                 m_parserError << "Rule id: " << std::to_string(rule->m_ruleId) \
                     << " is duplicated" << std::endl;
                 return false;
@@ -129,7 +130,7 @@ int Driver::addSecRule(Rule *rule) {
     }
 
     lastRule = rule;
-    m_rules[rule->m_phase].push_back(rule);
+    m_rulesSetPhases.insert(rule);
     return true;
 }
 
@@ -138,9 +139,9 @@ int Driver::parse(const std::string &f, const std::string &ref) {
     lastRule = NULL;
     loc.push_back(new yy::location());
     if (ref.empty()) {
-        this->ref.push_back("<<reference missing or not informed>>");
+        loc.back()->begin.filename = loc.back()->end.filename = new std::string("<<reference missing or not informed>>");
     } else {
-        this->ref.push_back(ref);
+        loc.back()->begin.filename = loc.back()->end.filename = new std::string(ref);
     }
 
     if (f.empty()) {
@@ -195,9 +196,7 @@ void Driver::error(const yy::location& l, const std::string& m,
     const std::string& c) {
     if (m_parserError.tellp() == 0) {
         m_parserError << "Rules error. ";
-        if (ref.empty() == false) {
-            m_parserError << "File: " << ref.back() << ". ";
-        }
+        m_parserError << "File: " << *l.end.filename << ". ";
         m_parserError << "Line: " << l.end.line << ". ";
         m_parserError << "Column: " << l.end.column - 1 << ". ";
     }

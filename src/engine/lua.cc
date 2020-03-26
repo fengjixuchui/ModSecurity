@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -39,7 +39,7 @@ namespace modsecurity {
 namespace engine {
 
 
-bool Lua::isCompatible(std::string script, Lua *l, std::string *error) {
+bool Lua::isCompatible(const std::string &script, Lua *l, std::string *error) {
 #ifdef WITH_LUA
     std::string lua(".lua");
     std::string err;
@@ -63,7 +63,7 @@ bool Lua::isCompatible(std::string script, Lua *l, std::string *error) {
 }
 
 
-bool Lua::load(std::string script, std::string *err) {
+bool Lua::load(const std::string &script, std::string *err) {
 #ifdef WITH_LUA
     lua_State *L = NULL;
     L = luaL_newstate();
@@ -121,7 +121,8 @@ const char *Lua::blob_reader(lua_State *L, void *ud, size_t *size) {
 }
 #endif
 
-int Lua::run(Transaction *t) {
+
+int Lua::run(Transaction *t, const std::string &str) {
 #ifdef WITH_LUA
     std::string luaRet;
     const char *a = NULL;
@@ -184,7 +185,15 @@ int Lua::run(Transaction *t) {
     lua_setglobal(L, "modsec");
 
     lua_getglobal(L, "main");
-    if (lua_pcall(L, 0, 1, 0)) {
+
+    ms_dbg_a(t, 1, str);
+
+    /* Put the parameter on the stack. */
+    if (!str.empty() ) {
+        lua_pushlstring(L, str.c_str(), str.length());
+    }
+
+    if (lua_pcall(L, ((!str.empty()) ? 1 : 0), 1, 0)) {
         std::string e;
         const char *luaerr = lua_tostring(L, -1);
         e.assign("Failed to execute lua script: " + m_scriptName + " (main)");
@@ -258,7 +267,7 @@ int Lua::getvar(lua_State *L) {
     z = const_cast<void *>(lua_topointer(L, -1));
     t = reinterpret_cast<Transaction *>(z);
 
-    std::string var = Variables::Variable::stringMatchResolve(t, varname);
+    std::string var = variables::Variable::stringMatchResolve(t, varname);
     var = applyTransformations(L, t, 2, var);
 
     if (var.size() == 0) {
@@ -286,7 +295,7 @@ int Lua::getvars(lua_State *L) {
     z = const_cast<void *>(lua_topointer(L, -1));
     t = reinterpret_cast<Transaction *>(z);
 
-    Variables::Variable::stringMatchResolveMulti(t, varname, &l);
+    variables::Variable::stringMatchResolveMulti(t, varname, &l);
 
     lua_newtable(L);
     for (auto i : l) {
@@ -294,11 +303,11 @@ int Lua::getvars(lua_State *L) {
         lua_newtable(L);
 
         lua_pushstring(L, "name");
-        lua_pushlstring(L, i->m_key.c_str(), i->m_key.size());
+        lua_pushlstring(L, i->getKeyWithCollection().c_str(), i->getKeyWithCollection().size());
         lua_settable(L, -3);
 
         lua_pushstring(L, "value");
-        lua_pushlstring(L, i->m_value.c_str(), i->m_value.size());
+        lua_pushlstring(L, i->getValue().c_str(), i->getValue().size());
         lua_settable(L, -3);
 
         lua_settable(L, -3);

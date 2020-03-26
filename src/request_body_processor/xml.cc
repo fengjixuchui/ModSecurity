@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -46,13 +46,13 @@ XML::~XML() {
 
 
 bool XML::init() {
-    xmlParserInputBufferCreateFilenameFunc entity;
+    //xmlParserInputBufferCreateFilenameFunc entity;
     if (m_transaction->m_rules->m_secXMLExternalEntity
-        == RulesProperties::TrueConfigBoolean) {
-        entity = xmlParserInputBufferCreateFilenameDefault(
+        == RulesSetProperties::TrueConfigBoolean) {
+        /*entity = */xmlParserInputBufferCreateFilenameDefault(
             __xmlParserInputBufferCreateFilename);
     } else {
-        entity = xmlParserInputBufferCreateFilenameDefault(
+        /*entity = */xmlParserInputBufferCreateFilenameDefault(
             this->unloadExternalEntity);
     }
 
@@ -99,6 +99,9 @@ bool XML::processChunk(const char *buf, unsigned int size,
             error->assign("XML: Failed to create parsing context.");
             return false;
         }
+
+        xmlSetGenericErrorFunc(m_data.parsing_ctx, null_error);
+
         return true;
     }
 

@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -28,7 +28,7 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 
 /* Invocation without an XPath expression makes sense
@@ -42,7 +42,7 @@ class XML_NoDictElement : public Variable {
         m_var(&m_name, &m_plain) {
         }
 
-    void evaluate(Transaction *transaction,
+    void evaluate(Transaction *t,
         Rule *rule,
         std::vector<const VariableValue *> *l) override {
         l->push_back(new VariableValue(&m_var));
@@ -55,7 +55,7 @@ class XML_NoDictElement : public Variable {
 
 class XML : public Variable {
  public:
-    explicit XML(std::string _name)
+    explicit XML(const std::string &_name)
         : Variable(_name) { }
 
     void evaluate(Transaction *transaction,
@@ -64,7 +64,7 @@ class XML : public Variable {
 };
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_XML_H_

@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -29,12 +29,12 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 
 class Tx_DictElement : public Variable {
  public:
-    explicit Tx_DictElement(std::string dictElement)
+    explicit Tx_DictElement(const std::string &dictElement)
         : Variable("TX:" + dictElement),
         m_dictElement("TX:" + dictElement) { }
 
@@ -65,7 +65,7 @@ class Tx_NoDictElement : public Variable {
 
 class Tx_DictElementRegexp : public VariableRegex {
  public:
-    explicit Tx_DictElementRegexp(std::string dictElement)
+    explicit Tx_DictElementRegexp(const std::string &dictElement)
         : VariableRegex("TX", dictElement),
         m_dictElement(dictElement) { }
 
@@ -94,11 +94,11 @@ class Tx_DynamicElement : public Variable {
             m_keyExclusion);
     }
 
-    void del(Transaction *t, std::string k) {
+    static void del(Transaction *t, const std::string &k) {
         t->m_collections.m_tx_collection->del(k);
     }
 
-    void storeOrUpdateFirst(Transaction *t, std::string var,
+    static void storeOrUpdateFirst(Transaction *t, const std::string &var,
         std::string value) {
         t->m_collections.m_tx_collection->storeOrUpdateFirst(var, value);
     }
@@ -107,7 +107,7 @@ class Tx_DynamicElement : public Variable {
 };
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_TX_H_

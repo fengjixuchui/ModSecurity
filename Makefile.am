@@ -56,13 +56,17 @@ parser:
 
 
 cppcheck:
-	@cppcheck \
+	@cppcheck -U YYSTYPE -U MBEDTLS_MD5_ALT -U MBEDTLS_SHA1_ALT \
+		-D MS_CPPCHECK_DISABLED_FOR_PARSER \
 		--suppressions-list=./test/cppcheck_suppressions.txt \
 		--enable=all \
 		--inconclusive \
 		--template="warning: {file},{line},{severity},{id},{message}" \
-		--std=posix . 2> cppcheck.txt
-	cat cppcheck.txt | grep -v "/ lalr1.cc"
+		-I headers -I . -I others -I src -I others/mbedtls -I src/parser \
+		--error-exitcode=1 \
+		-i "src/parser/seclang-parser.cc" -i "src/parser/seclang-scanner.cc" \
+		--force --verbose .
+
 
 check-static: cppcheck
 
@@ -149,6 +153,9 @@ TESTS+=test/test-cases/regression/issue-1850.json
 TESTS+=test/test-cases/regression/issue-1941.json
 TESTS+=test/test-cases/regression/issue-1943.json
 TESTS+=test/test-cases/regression/issue-1956.json
+TESTS+=test/test-cases/regression/issue-1960.json
+TESTS+=test/test-cases/regression/issue-2099.json
+TESTS+=test/test-cases/regression/issue-2111.json
 TESTS+=test/test-cases/regression/issue-394.json
 TESTS+=test/test-cases/regression/issue-849.json
 TESTS+=test/test-cases/regression/issue-960.json
@@ -160,12 +167,14 @@ TESTS+=test/test-cases/regression/operator-detectxss.json
 TESTS+=test/test-cases/regression/operator-fuzzyhash.json
 TESTS+=test/test-cases/regression/operator-inpectFile.json
 TESTS+=test/test-cases/regression/operator-ipMatchFromFile.json
+TESTS+=test/test-cases/regression/operator-pm.json
 TESTS+=test/test-cases/regression/operator-rx.json
 TESTS+=test/test-cases/regression/operator-UnconditionalMatch.json
 TESTS+=test/test-cases/regression/operator-validate-byte-range.json
 TESTS+=test/test-cases/regression/operator-verifycc.json
 TESTS+=test/test-cases/regression/operator-verifycpf.json
 TESTS+=test/test-cases/regression/operator-verifyssn.json
+TESTS+=test/test-cases/regression/operator-verifysvnr.json
 TESTS+=test/test-cases/regression/request-body-parser-json.json
 TESTS+=test/test-cases/regression/request-body-parser-multipart-crlf.json
 TESTS+=test/test-cases/regression/request-body-parser-multipart.json
@@ -175,6 +184,7 @@ TESTS+=test/test-cases/regression/rule-920120.json
 TESTS+=test/test-cases/regression/rule-920200.json
 TESTS+=test/test-cases/regression/rule-920274.json
 TESTS+=test/test-cases/regression/secaction.json
+TESTS+=test/test-cases/regression/secargumentslimit.json
 TESTS+=test/test-cases/regression/sec_component_signature.json
 TESTS+=test/test-cases/regression/secmarker.json
 TESTS+=test/test-cases/regression/secruleengine.json
@@ -287,6 +297,7 @@ TESTS+=test/test-cases/secrules-language-tests/operators/validateUtf8Encoding.js
 TESTS+=test/test-cases/secrules-language-tests/operators/verifyCC.json
 TESTS+=test/test-cases/secrules-language-tests/operators/verifycpf.json
 TESTS+=test/test-cases/secrules-language-tests/operators/verifyssn.json
+TESTS+=test/test-cases/secrules-language-tests/operators/verifysvnr.json
 TESTS+=test/test-cases/secrules-language-tests/operators/within.json
 TESTS+=test/test-cases/secrules-language-tests/transformations/base64DecodeExt.json
 TESTS+=test/test-cases/secrules-language-tests/transformations/base64Decode.json
@@ -322,6 +333,7 @@ TESTS+=test/test-cases/secrules-language-tests/transformations/urlDecode.json
 TESTS+=test/test-cases/secrules-language-tests/transformations/urlDecodeUni.json
 TESTS+=test/test-cases/secrules-language-tests/transformations/urlEncode.json
 TESTS+=test/test-cases/secrules-language-tests/transformations/utf8toUnicode.json
+
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = modsecurity.pc

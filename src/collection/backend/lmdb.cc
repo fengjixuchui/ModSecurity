@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -284,7 +284,7 @@ void LMDB::resolveSingleMatch(const std::string& var,
 
     string2val(var, &mdb_key);
 
-    rc = mdb_cursor_open(txn, dbi, &cursor);
+    mdb_cursor_open(txn, dbi, &cursor);
     while ((rc = mdb_cursor_get(cursor, &mdb_key,
             &mdb_value_ret, MDB_NEXT_DUP)) == 0) {
         std::string *a = new std::string(
@@ -467,7 +467,7 @@ end_txn:
 
 void LMDB::resolveMultiMatches(const std::string& var,
     std::vector<const VariableValue *> *l,
-    Variables::KeyExclusions &ke) {
+    variables::KeyExclusions &ke) {
     MDB_val key, data;
     MDB_txn *txn = NULL;
     MDB_dbi dbi;
@@ -529,14 +529,13 @@ end_txn:
 
 void LMDB::resolveRegularExpression(const std::string& var,
     std::vector<const VariableValue *> *l,
-    Variables::KeyExclusions &ke) {
+    variables::KeyExclusions &ke) {
     MDB_val key, data;
     MDB_txn *txn = NULL;
     MDB_dbi dbi;
     int rc;
     MDB_stat mst;
     MDB_cursor *cursor;
-    size_t pos;
 
     Utils::Regex r(var);
 

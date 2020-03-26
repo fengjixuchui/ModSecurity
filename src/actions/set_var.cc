@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -19,8 +19,8 @@
 #include <string>
 #include <memory>
 
+#include "modsecurity/rules_set.h"
 #include "modsecurity/transaction.h"
-#include "modsecurity/rules.h"
 #include "modsecurity/rule.h"
 #include "src/utils/string.h"
 #include "src/variables/global.h"
@@ -49,21 +49,20 @@ bool SetVar::evaluate(Rule *rule, Transaction *t) {
     }
 
     std::string m_variableNameExpanded;
-    std::vector<const VariableValue *> l;
 
     auto *v = m_variable.get();
-    Variables::Tx_DynamicElement *tx = dynamic_cast<
-        Variables::Tx_DynamicElement *> (v);
-    Variables::Session_DynamicElement *session = dynamic_cast<
-        Variables::Session_DynamicElement *> (v);
-    Variables::Ip_DynamicElement *ip = dynamic_cast<
-        Variables::Ip_DynamicElement *> (v);
-    Variables::Resource_DynamicElement *resource = dynamic_cast<
-        Variables::Resource_DynamicElement *> (v);
-    Variables::Global_DynamicElement *global = dynamic_cast<
-        Variables::Global_DynamicElement *> (v);
-    Variables::User_DynamicElement *user = dynamic_cast<
-        Variables::User_DynamicElement *> (v);
+    variables::Tx_DynamicElement *tx = dynamic_cast<
+        variables::Tx_DynamicElement *> (v);
+    variables::Session_DynamicElement *session = dynamic_cast<
+        variables::Session_DynamicElement *> (v);
+    variables::Ip_DynamicElement *ip = dynamic_cast<
+        variables::Ip_DynamicElement *> (v);
+    variables::Resource_DynamicElement *resource = dynamic_cast<
+        variables::Resource_DynamicElement *> (v);
+    variables::Global_DynamicElement *global = dynamic_cast<
+        variables::Global_DynamicElement *> (v);
+    variables::User_DynamicElement *user = dynamic_cast<
+        variables::User_DynamicElement *> (v);
     if (tx) {
         m_variableNameExpanded = tx->m_string->evaluate(t, rule);
     } else if (session) {
@@ -117,7 +116,7 @@ bool SetVar::evaluate(Rule *rule, Transaction *t) {
             if (l.size() == 0) {
                 value = 0;
             } else {
-                value = stoi(l[0]->m_value);
+                value = stoi(l[0]->getValue());
                 for (auto &i : l) {
                     delete i;
                 }

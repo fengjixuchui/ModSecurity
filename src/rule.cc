@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -25,13 +25,13 @@
 #include <utility>
 #include <memory>
 
+#include "modsecurity/rules_set.h"
 #include "src/operators/operator.h"
 #include "modsecurity/actions/action.h"
 #include "modsecurity/modsecurity.h"
 #include "src/actions/transformations/none.h"
 #include "src/actions/tag.h"
 #include "src/utils/string.h"
-#include "modsecurity/rules.h"
 #include "modsecurity/rule_message.h"
 #include "src/actions/msg.h"
 #include "src/actions/log_data.h"
@@ -47,73 +47,75 @@ namespace modsecurity {
 
 using operators::Operator;
 using actions::Action;
-using Variables::Variable;
+using variables::Variable;
 using actions::transformations::None;
 
 
-Rule::Rule(std::string marker)
-    : m_accuracy(0),
+Rule::Rule(const std::string &marker)
+    : m_theDisruptiveAction(nullptr),
+    m_logData(nullptr),
+    m_msg(nullptr),
+    m_severity(nullptr),
+    m_chained(false),
+    m_containsCaptureAction(false),
+    m_containsMultiMatchAction(false),
+    m_containsStaticBlockAction(false),
+    m_secMarker(true),
+    m_ruleId(0),
+    m_accuracy(0),
+    m_lineNumber(0),
+    m_maturity(0),
+    m_phase(-1),
+    m_variables(NULL),
+    m_op(NULL),
+    m_chainedRuleChild(NULL),
+    m_chainedRuleParent(NULL),
+    m_fileName(""),
+    m_marker(marker),
+    m_rev(""),
+    m_ver(""),
     m_actionsRuntimePos(),
     m_actionsRuntimePre(),
     m_actionsSetVar(),
     m_actionsTag(),
-    m_chained(false),
-    m_chainedRuleChild(NULL),
-    m_fileName(""),
-    m_lineNumber(0),
-    m_marker(marker),
-    m_maturity(0),
-    m_op(NULL),
-    m_phase(-1),
-    m_rev(""),
-    m_ruleId(0),
-    m_secMarker(true),
-    m_variables(NULL),
-    m_ver(""),
     m_unconditional(false),
-    m_referenceCount(1),
-    m_theDisruptiveAction(nullptr),
-    m_containsStaticBlockAction(false),
-    m_containsCaptureAction(false),
-    m_containsMultiMatchAction(false),
-    m_severity(nullptr),
-    m_logData(nullptr),
-    m_msg(nullptr) { }
+    m_referenceCount(1) { }
 
 
 Rule::Rule(Operator *_op,
-    Variables::Variables *_variables,
+    variables::Variables *_variables,
     std::vector<Action *> *actions,
     std::string fileName,
     int lineNumber)
-    : m_accuracy(0),
+    : m_theDisruptiveAction(nullptr),
+    m_logData(nullptr),
+    m_msg(nullptr),
+    m_severity(nullptr),
+    m_chained(false),
+    m_containsCaptureAction(false),
+    m_containsMultiMatchAction(false),
+    m_containsStaticBlockAction(false),
+    m_secMarker(false),
+    m_ruleId(0),
+    m_accuracy(0),
+    m_lineNumber(lineNumber),
+    m_maturity(0),
+    m_phase(-1),
+    m_variables(_variables),
+    m_op(_op),
+    m_chainedRuleChild(NULL),
+    m_chainedRuleParent(NULL),
+    m_fileName(fileName),
+    m_marker(""),
+    m_rev(""),
+    m_ver(""),
     m_actionsRuntimePos(),
     m_actionsRuntimePre(),
     m_actionsSetVar(),
     m_actionsTag(),
-    m_chained(false),
-    m_chainedRuleChild(NULL),
-    m_chainedRuleParent(NULL),
-    m_fileName(fileName),
-    m_lineNumber(lineNumber),
-    m_marker(""),
-    m_maturity(0),
-    m_op(_op),
-    m_phase(-1),
-    m_rev(""),
-    m_ruleId(0),
-    m_secMarker(false),
-    m_variables(_variables),
-    m_ver(""),
     m_unconditional(false),
-    m_referenceCount(1),
-    m_theDisruptiveAction(nullptr),
-    m_containsStaticBlockAction(false),
-    m_containsCaptureAction(false),
-    m_containsMultiMatchAction(false),
-    m_severity(nullptr),
-    m_logData(nullptr),
-    m_msg(nullptr) {
+    m_referenceCount(1)
+    {
     /* */
     organizeActions(actions);
 
@@ -303,7 +305,7 @@ void Rule::executeActionsIndependentOfChainedRuleResult(Transaction *trans,
 }
 
 
-bool Rule::executeOperatorAt(Transaction *trans, std::string key,
+bool Rule::executeOperatorAt(Transaction *trans, const std::string &key,
     std::string value, std::shared_ptr<RuleMessage> ruleMessage) {
 #if MSC_EXEC_CLOCK_ENABLED
     clock_t begin = clock();
@@ -338,7 +340,7 @@ inline void Rule::executeTransformation(actions::Action *a,
     std::list<std::pair<std::shared_ptr<std::string>,
         std::shared_ptr<std::string>>> *ret,
     std::string *path,
-    int *nth) {
+    int *nth) const {
 
     std::string *oldValue = (*value).get();
     std::string newValue = a->evaluate(*oldValue, trans);
@@ -459,15 +461,15 @@ std::list<std::pair<std::shared_ptr<std::string>,
 
 
 void Rule::getVariablesExceptions(Transaction *t,
-    Variables::Variables *exclusion, Variables::Variables *addition) {
+    variables::Variables *exclusion, variables::Variables *addition) {
     for (auto &a : t->m_rules->m_exceptions.m_variable_update_target_by_tag) {
         if (containsTag(*a.first.get(), t) == false) {
             continue;
         }
         Variable *b = a.second.get();
-        if (dynamic_cast<Variables::VariableModificatorExclusion*>(b)) {
+        if (dynamic_cast<variables::VariableModificatorExclusion*>(b)) {
             exclusion->push_back(
-                dynamic_cast<Variables::VariableModificatorExclusion*>(
+                dynamic_cast<variables::VariableModificatorExclusion*>(
                     b)->m_base.get());
         } else {
             addition->push_back(b);
@@ -479,9 +481,9 @@ void Rule::getVariablesExceptions(Transaction *t,
             continue;
         }
         Variable *b = a.second.get();
-        if (dynamic_cast<Variables::VariableModificatorExclusion*>(b)) {
+        if (dynamic_cast<variables::VariableModificatorExclusion*>(b)) {
             exclusion->push_back(
-                dynamic_cast<Variables::VariableModificatorExclusion*>(
+                dynamic_cast<variables::VariableModificatorExclusion*>(
                     b)->m_base.get());
         } else {
             addition->push_back(b);
@@ -493,9 +495,9 @@ void Rule::getVariablesExceptions(Transaction *t,
             continue;
         }
         Variable *b = a.second.get();
-        if (dynamic_cast<Variables::VariableModificatorExclusion*>(b)) {
+        if (dynamic_cast<variables::VariableModificatorExclusion*>(b)) {
             exclusion->push_back(
-                dynamic_cast<Variables::VariableModificatorExclusion*>(
+                dynamic_cast<variables::VariableModificatorExclusion*>(
                     b)->m_base.get());
         } else {
             addition->push_back(b);
@@ -504,17 +506,14 @@ void Rule::getVariablesExceptions(Transaction *t,
 }
 
 
-inline void Rule::getFinalVars(Variables::Variables *vars,
-    Variables::Variables *exclusion, Transaction *trans) {
-    Variables::Variables addition;
+inline void Rule::getFinalVars(variables::Variables *vars,
+    variables::Variables *exclusion, Transaction *trans) {
+    variables::Variables addition;
 
     getVariablesExceptions(trans, exclusion, &addition);
 
     for (int i = 0; i < m_variables->size(); i++) {
         Variable *variable = m_variables->at(i);
-        std::vector<const VariableValue *> e;
-
-
         if (exclusion->contains(variable)) {
             continue;
         }
@@ -549,7 +548,7 @@ inline void Rule::getFinalVars(Variables::Variables *vars,
 void Rule::executeAction(Transaction *trans,
     bool containsBlock, std::shared_ptr<RuleMessage> ruleMessage,
     Action *a, bool defaultContext) {
-    if (a->isDisruptive() == false) {
+    if (a->isDisruptive() == false && a->m_name != "block") {
         ms_dbg_a(trans, 9, "Running " \
             "action: " + a->m_name);
         a->evaluate(this, trans, ruleMessage);
@@ -562,14 +561,14 @@ void Rule::executeAction(Transaction *trans,
         return;
     }
 
-    if (trans->getRuleEngineState() == Rules::EnabledRuleEngine) {
+    if (trans->getRuleEngineState() == RulesSet::EnabledRuleEngine) {
         ms_dbg_a(trans, 4, "Running (disruptive)     action: " + a->m_name + \
             ".");
         a->evaluate(this, trans, ruleMessage);
         return;
     }
 
-    ms_dbg_a(trans, 4, "Not running disruptive action: " \
+    ms_dbg_a(trans, 4, "Not running any disruptive action (or block): " \
         + a->m_name + ". SecRuleEngine is not On.");
 }
 
@@ -620,14 +619,13 @@ void Rule::executeActionsAfterFullMatch(Transaction *trans,
 bool Rule::evaluate(Transaction *trans,
     std::shared_ptr<RuleMessage> ruleMessage) {
     bool globalRet = false;
-    Variables::Variables *variables = this->m_variables;
+    variables::Variables *variables = this->m_variables;
     bool recursiveGlobalRet;
     bool containsBlock = m_containsStaticBlockAction;
-    std::vector<std::unique_ptr<VariableValue>> finalVars;
     std::string eparam;
-    Variables::Variables vars;
+    variables::Variables vars;
     vars.reserve(4);
-    Variables::Variables exclusion;
+    variables::Variables exclusion;
 
     if (ruleMessage == NULL) {
         ruleMessage = std::shared_ptr<RuleMessage>(
@@ -696,25 +694,25 @@ bool Rule::evaluate(Transaction *trans,
         }
         var->evaluate(trans, this, &e);
         for (const VariableValue *v : e) {
-            const std::string &value = v->m_value;
-            const std::string &key = v->m_key;
+            const std::string &value = v->getValue();
+            const std::string &key = v->getKeyWithCollection();
 
-            if (exclusion.contains(v->m_key) ||
+            if (exclusion.contains(v) ||
                 std::find_if(trans->m_ruleRemoveTargetById.begin(),
                     trans->m_ruleRemoveTargetById.end(),
                     [&, v, this](std::pair<int, std::string> &m) -> bool {
-                        return m.first == m_ruleId && m.second == v->m_key;
+                        return m.first == m_ruleId && m.second == v->getKeyWithCollection();
                     }) != trans->m_ruleRemoveTargetById.end()
             ) {
                 delete v;
                 v = NULL;
                 continue;
             }
-            if (exclusion.contains(v->m_key) ||
+            if (exclusion.contains(v) ||
                 std::find_if(trans->m_ruleRemoveTargetByTag.begin(),
                     trans->m_ruleRemoveTargetByTag.end(),
                     [&, v, trans, this](std::pair<std::string, std::string> &m) -> bool {
-                        return containsTag(m.first, trans) && m.second == v->m_key;
+                        return containsTag(m.first, trans) && m.second == v->getKeyWithCollection();
                     }) != trans->m_ruleRemoveTargetByTag.end()
             ) {
                 delete v;
@@ -736,7 +734,7 @@ bool Rule::evaluate(Transaction *trans,
                 if (ret == true) {
                     ruleMessage->m_match = m_op->resolveMatchMessage(trans,
                         key, value);
-                    for (auto &i : v->m_orign) {
+                    for (auto &i : v->getOrigin()) {
                         ruleMessage->m_reference.append(i->toText());
                     }
 
@@ -801,9 +799,8 @@ end_exec:
     executeActionsAfterFullMatch(trans, containsBlock, ruleMessage);
 
     /* last rule in the chain. */
-    bool isItToBeLogged = ruleMessage->m_saveMessage;
-    if (isItToBeLogged && !m_containsMultiMatchAction
-        && !ruleMessage->m_message.empty()) {
+    bool isItToBeLogged = (ruleMessage->m_saveMessage && (m_chainedRuleParent == nullptr));
+    if (isItToBeLogged && !m_containsMultiMatchAction) {
         /* warn */
         trans->m_rulesMessages.push_back(*ruleMessage);
 
@@ -811,14 +808,6 @@ end_exec:
         if (!ruleMessage->m_isDisruptive) {
             trans->serverLog(ruleMessage);
 	}
-    }
-    else if (m_containsStaticBlockAction && !m_containsMultiMatchAction) {
-        /* warn */
-        trans->m_rulesMessages.push_back(*ruleMessage);
-        /* error */
-        if (!ruleMessage->m_isDisruptive) {
-            trans->serverLog(ruleMessage);
-        }
     }
 
     return true;

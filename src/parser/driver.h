@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -21,18 +21,21 @@
 #include <list>
 #endif
 
+
 #ifndef SRC_PARSER_DRIVER_H_
 #define SRC_PARSER_DRIVER_H_
 
 #include "modsecurity/modsecurity.h"
-#include "modsecurity/rules.h"
-#include "modsecurity/rules_properties.h"
+#include "modsecurity/rules_set.h"
+#include "modsecurity/rules_set_properties.h"
 #include "modsecurity/audit_log.h"
 #include "src/rule_script.h"
+#ifndef MS_CPPCHECK_DISABLED_FOR_PARSER
 #include "src/parser/seclang-parser.hh"
+#endif
 
 using modsecurity::Rule;
-using modsecurity::Rules;
+using modsecurity::RulesSet;
 
 
 # define YY_DECL \
@@ -50,7 +53,15 @@ typedef struct Driver_t Driver;
 #endif
 
 
-class Driver : public RulesProperties {
+/**
+ *
+ * FIXME: There is a memory leak in the filename at yy::location.
+ *        The filename should be converted into a shared string to
+ *        save memory or be associated with the life cycle of the
+ *        driver class.
+ *
+ **/
+class Driver : public RulesSetProperties {
  public:
     Driver();
     virtual ~Driver();
@@ -77,9 +88,10 @@ class Driver : public RulesProperties {
 
     std::list<yy::location *> loc;
 
-    std::list<std::string> ref;
     std::string buffer;
     Rule *lastRule;
+
+    RulesSetPhases m_rulesSetPhases;
 };
 
 

@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -50,8 +50,8 @@ void HttpsClient::setKey(const std::string& key) {
     m_key = "ModSec-key: " + key;
 }
 
-void HttpsClient::setRequestBody(const std::string& requestBody) {
-    m_requestBody = requestBody;
+void HttpsClient::setRequestBody(const std::string& requestType) {
+    m_requestBody = requestType;
 }
 
 void HttpsClient::setRequestType(const std::string& requestType) {
@@ -64,7 +64,7 @@ bool HttpsClient::download(const std::string &uri) {
     CURL *curl;
     CURLcode res;
     std::string uniqueId = "ModSec-unique-id: " + UniqueId::uniqueId();
-    std::string status = "ModSec-status: " MODSECURITY_VERSION_NUM;
+    std::string status = "ModSec-status: " + std::to_string(MODSECURITY_VERSION_NUM);
 
     curl = curl_easy_init();
     if (!curl) {

@@ -38,7 +38,7 @@ As a result of this goal we have rearchitechted Libmodsecurity such that it is n
 
 ### It is no longer just a module.
 
-The 'ModSecurity' branch no longer contains the traditional module logic (for Nginx, Apache, and IIS) that has traditionally been packaged all togerher. Instead, this branch only contains the library portion (libmodsecurity) for this project. This library is consumed by what we have termed 'Connectors' these connectors will interface with your webserver and provide the library with a common format that it undersands. Each of these connectors is maintained as a seperate GitHub project. For instance, the Nginx connector is supplied by the ModSecurity-nginx project (https://github.com/SpiderLabs/ModSecurity-nginx).
+The 'ModSecurity' branch no longer contains the traditional module logic (for Nginx, Apache, and IIS) that has traditionally been packaged all together. Instead, this branch only contains the library portion (libmodsecurity) for this project. This library is consumed by what we have termed 'Connectors' these connectors will interface with your webserver and provide the library with a common format that it undersands. Each of these connectors is maintained as a seperate GitHub project. For instance, the Nginx connector is supplied by the ModSecurity-nginx project (https://github.com/SpiderLabs/ModSecurity-nginx).
 
 Keeping these connectors seperated allows each project to be have different release cycles, issues and development trees. Addtionally, it means that when you install ModSecurity v3 you only get exactly what you need, no extras you won't be using.
 
@@ -210,7 +210,7 @@ the utilities, follow the commands listed below:
 ```shell
 $ cd /path/to/your/ModSecurity
 $ git submodule foreach git pull
-$ cd tests
+$ cd test
 $ ./regression-tests
 $ ./unit-tests
  ```
@@ -260,6 +260,12 @@ credit will be given.
 We are open to discussing any new feature request with the community via the mailing lists. You can alternativly,
 feel free to open GitHub issues requesting new features. Before opening a
 new issue, please check if there is one already opened on the same topic.
+
+## Bindings
+
+The libModSecurity design allows the integration with bindings. There is an effort to avoid brake the API [binary] compatibility to make an easy integration with possible bindings. Currently, there are two notable projects maintained by the community:
+   * Python - https://github.com/actions-security/pymodsecurity
+   * Varnish - https://github.com/xdecock/vmod-modsecurity
 
 ## Packing
 

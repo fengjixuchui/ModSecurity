@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -142,7 +142,10 @@ int JSON::addArgument(const std::string& value) {
     }
 
 
-    m_transaction->addArgument("JSON", path + data, value, 0);
+    if (!m_transaction->addArgument("JSON", path + data, value, 0)) {
+        // cancel parsing by returning false
+        return 0;
+    }
 
     return 1;
 }
@@ -237,10 +240,10 @@ int JSON::yajl_end_array(void *ctx) {
     tthis->m_containers.pop_back();
     delete a;
     if (tthis->m_containers.size() > 0) {
-        JSONContainerArray *a = dynamic_cast<JSONContainerArray *>(
+        JSONContainerArray *ja = dynamic_cast<JSONContainerArray *>(
             tthis->m_containers.back());
-        if (a) {
-            a->m_elementCounter++;
+        if (ja) {
+            ja->m_elementCounter++;
         }
     }
 
@@ -272,10 +275,10 @@ int JSON::yajl_end_map(void *ctx) {
     delete a;
 
     if (tthis->m_containers.size() > 0) {
-        JSONContainerArray *a = dynamic_cast<JSONContainerArray *>(
+        JSONContainerArray *ja = dynamic_cast<JSONContainerArray *>(
             tthis->m_containers.back());
-        if (a) {
-            a->m_elementCounter++;
+        if (ja) {
+            ja->m_elementCounter++;
         }
     }
 

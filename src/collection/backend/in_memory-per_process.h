@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -72,7 +72,7 @@ class InMemoryPerProcess :
         /*std::hash<std::string>*/MyHash, MyEqual>,
     public Collection {
  public:
-    explicit InMemoryPerProcess(std::string name);
+    explicit InMemoryPerProcess(const std::string &name);
     ~InMemoryPerProcess();
     void store(std::string key, std::string value) override;
 
@@ -90,10 +90,10 @@ class InMemoryPerProcess :
         std::vector<const VariableValue *> *l) override;
     void resolveMultiMatches(const std::string& var,
         std::vector<const VariableValue *> *l,
-        Variables::KeyExclusions &ke) override;
+        variables::KeyExclusions &ke) override;
     void resolveRegularExpression(const std::string& var,
         std::vector<const VariableValue *> *l,
-        Variables::KeyExclusions &ke) override;
+        variables::KeyExclusions &ke) override;
 
  private:
     pthread_mutex_t m_lock;

@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -42,6 +42,10 @@ class VerifySSN : public Operator {
     ~VerifySSN() {
         delete m_re;
     }
+
+    bool operator=(const VerifySSN &a) = delete;
+    VerifySSN(const VerifySSN &a) = delete;
+
     bool evaluate(Transaction *transaction, Rule *rule,
         const std::string &input) override {
         return evaluate(transaction, NULL, input, NULL);
@@ -54,10 +58,12 @@ class VerifySSN : public Operator {
         const std::string& input,
         std::shared_ptr<RuleMessage> ruleMessage) override;
 
-    int convert_to_int(const char c);
-    bool verify(const char *ssnumber, int len);
+
 
  private:
+    static bool verify(const char *ssnumber, int len);
+    static int convert_to_int(const char c);
+
     Regex *m_re;
 };
 

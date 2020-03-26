@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -114,7 +114,7 @@ Transformation* Transformation::instantiate(std::string a) {
     IF_MATCH(urlDecodeUni) { return new UrlDecodeUni(a); }
     IF_MATCH(urlDecode) { return new UrlDecode(a); }
     IF_MATCH(urlEncode) { return new UrlEncode(a); }
-    IF_MATCH(utf8ToUnicode) { return new Utf8ToUnicode(a); }
+    IF_MATCH(utf8toUnicode) { return new Utf8ToUnicode(a); }
 
     return new Transformation(a);
 }

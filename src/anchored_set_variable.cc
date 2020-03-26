@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -28,7 +28,8 @@
 namespace modsecurity {
 
 
-AnchoredSetVariable::AnchoredSetVariable(Transaction *t, std::string name)
+AnchoredSetVariable::AnchoredSetVariable(Transaction *t,
+    const std::string &name)
     : m_transaction(t),
     m_name(name) {
         reserve(10);
@@ -53,14 +54,13 @@ void AnchoredSetVariable::set(const std::string &key,
     const std::string &value, size_t offset, size_t len) {
     std::unique_ptr<VariableOrigin> origin(new VariableOrigin());
     std::string *v = new std::string(value);
-    VariableValue *var = new VariableValue(std::make_shared<std::string>(
-        m_name + ":" + key), v);
+    VariableValue *var = new VariableValue(&m_name, &key, v);
     delete v;
 
     origin->m_offset = offset;
     origin->m_length = len;
 
-    var->m_orign.push_back(std::move(origin));
+    var->addOrigin(std::move(origin));
     emplace(key, var);
 }
 
@@ -69,14 +69,13 @@ void AnchoredSetVariable::set(const std::string &key,
     const std::string &value, size_t offset) {
     std::unique_ptr<VariableOrigin> origin(new VariableOrigin());
     std::string *v = new std::string(value);
-    VariableValue *var = new VariableValue(std::make_shared<std::string>(
-        m_name + ":" + key), v);
+    VariableValue *var = new VariableValue(&m_name, &key, v);
     delete v;
 
     origin->m_offset = offset;
     origin->m_length = value.size();
 
-    var->m_orign.push_back(std::move(origin));
+    var->addOrigin(std::move(origin));
     emplace(key, var);
 }
 
@@ -91,7 +90,7 @@ void AnchoredSetVariable::resolve(
 
 void AnchoredSetVariable::resolve(
     std::vector<const VariableValue *> *l,
-    Variables::KeyExclusions &ke) {
+    variables::KeyExclusions &ke) {
     for (const auto& x : *this) {
         if (!ke.toOmit(x.first)) {
             l->insert(l->begin(), new VariableValue(x.second));
@@ -117,7 +116,7 @@ std::unique_ptr<std::string> AnchoredSetVariable::resolveFirst(
     auto range = equal_range(key);
     for (auto it = range.first; it != range.second; ++it) {
         std::unique_ptr<std::string> b(new std::string());
-        b->assign(it->second->m_value);
+        b->assign(it->second->getValue());
         return b;
     }
     return nullptr;
@@ -138,7 +137,7 @@ void AnchoredSetVariable::resolveRegularExpression(Utils::Regex *r,
 
 void AnchoredSetVariable::resolveRegularExpression(Utils::Regex *r,
     std::vector<const VariableValue *> *l,
-    Variables::KeyExclusions &ke) {
+    variables::KeyExclusions &ke) {
     for (const auto& x : *this) {
         int ret = Utils::regex_search(x.first, *r);
         if (ret <= 0) {

@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -21,6 +21,7 @@
 
 #include "modsecurity/transaction.h"
 #include "modsecurity/rule_message.h"
+#include "modsecurity/rules_set.h"
 
 namespace modsecurity {
 namespace actions {
@@ -29,6 +30,9 @@ namespace actions {
 bool AuditLog::evaluate(Rule *rule, Transaction *transaction,
     std::shared_ptr<RuleMessage> rm) {
     rm->m_noAuditLog = false;
+    ms_dbg_a(transaction, 9, "Saving transaction to logs");
+    rm->m_saveMessage = true;
+
     return true;
 }
 

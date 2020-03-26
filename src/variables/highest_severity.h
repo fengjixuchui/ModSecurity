@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -26,22 +26,21 @@
 namespace modsecurity {
 
 class Transaction;
-namespace Variables {
+namespace variables {
 
 class HighestSeverity : public Variable {
  public:
-    explicit HighestSeverity(std::string _name)
-        : Variable(_name),
-        m_retName("HIGHEST_SEVERITY") { }
+    explicit HighestSeverity(const std::string &_name)
+        : Variable(_name)
+    { }
 
     void evaluate(Transaction *transaction,
         Rule *rule,
         std::vector<const VariableValue *> *l) override;
-    std::string m_retName;
 };
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity
 
 #endif  // SRC_VARIABLES_HIGHEST_SEVERITY_H_

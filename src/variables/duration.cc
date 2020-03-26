@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -25,7 +25,7 @@
 #include "src/utils/system.h"
 
 namespace modsecurity {
-namespace Variables {
+namespace variables {
 
 void Duration::evaluate(Transaction *transaction,
     Rule *rule,
@@ -39,5 +39,5 @@ void Duration::evaluate(Transaction *transaction,
 }
 
 
-}  // namespace Variables
+}  // namespace variables
 }  // namespace modsecurity

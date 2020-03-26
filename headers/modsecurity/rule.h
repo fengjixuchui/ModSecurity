@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -32,7 +32,7 @@
 #ifdef __cplusplus
 
 namespace modsecurity {
-namespace Variables {
+namespace variables {
 class Variable;
 class Variables;
 }
@@ -52,11 +52,11 @@ class Operator;
 class Rule {
  public:
     Rule(operators::Operator *_op,
-            Variables::Variables *_variables,
+            variables::Variables *_variables,
             std::vector<actions::Action *> *_actions,
             std::string fileName,
             int lineNumber);
-    explicit Rule(std::string marker);
+    explicit Rule(const std::string &marker);
     virtual ~Rule();
 
     virtual bool evaluate(Transaction *transaction,
@@ -74,12 +74,12 @@ class Rule {
         std::list<std::pair<std::shared_ptr<std::string>,
         std::shared_ptr<std::string>>> *ret,
         std::string *path,
-        int *nth);
+        int *nth) const;
 
     void getVariablesExceptions(Transaction *t,
-        Variables::Variables *exclusion, Variables::Variables *addition);
-    inline void getFinalVars(Variables::Variables *vars,
-        Variables::Variables *eclusion, Transaction *trans);
+        variables::Variables *exclusion, variables::Variables *addition);
+    inline void getFinalVars(variables::Variables *vars,
+        variables::Variables *eclusion, Transaction *trans);
     void executeActionsAfterFullMatch(Transaction *trasn,
         bool containsDisruptive, std::shared_ptr<RuleMessage> ruleMessage);
 
@@ -87,13 +87,13 @@ class Rule {
         std::shared_ptr<std::string>>> executeDefaultTransformations(
         Transaction *trasn, const std::string &value);
 
-    bool executeOperatorAt(Transaction *trasn, std::string key,
+    bool executeOperatorAt(Transaction *trasn, const std::string &key,
         std::string value, std::shared_ptr<RuleMessage> rm);
     void executeActionsIndependentOfChainedRuleResult(Transaction *trasn,
         bool *b, std::shared_ptr<RuleMessage> ruleMessage);
-    inline void updateMatchedVars(Transaction *trasn, const std::string &key,
+    static inline void updateMatchedVars(Transaction *trasn, const std::string &key,
         const std::string &value);
-    inline void cleanMatchedVars(Transaction *trasn);
+    static inline void cleanMatchedVars(Transaction *trasn);
 
     std::vector<actions::Action *> getActionsByName(const std::string& name,
         Transaction *t);
@@ -138,7 +138,7 @@ class Rule {
     int m_lineNumber;
     int m_maturity;
     int m_phase;
-    modsecurity::Variables::Variables *m_variables;
+    modsecurity::variables::Variables *m_variables;
     operators::Operator *m_op;
     Rule *m_chainedRuleChild;
     Rule *m_chainedRuleParent;

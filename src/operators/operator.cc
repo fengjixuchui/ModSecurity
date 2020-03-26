@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -58,6 +58,7 @@
 #include "src/operators/verify_cc.h"
 #include "src/operators/verify_cpf.h"
 #include "src/operators/verify_ssn.h"
+#include "src/operators/verify_svnr.h"
 #include "src/operators/within.h"
 #include "src/operators/unconditional_match.h"
 
@@ -185,13 +186,14 @@ Operator *Operator::instantiate(std::string op, std::string param_str) {
     IF_MATCH(verifycc) { return new VerifyCC(std::move(param)); }
     IF_MATCH(verifycpf) { return new VerifyCPF(std::move(param)); }
     IF_MATCH(verifyssn) { return new VerifySSN(std::move(param)); }
+    IF_MATCH(verifysvnr) { return new VerifySVNR(std::move(param)); }
     IF_MATCH(within) { return new Within(std::move(param)); }
 
     IF_MATCH(unconditionalmatch) {
         return new UnconditionalMatch();
     }
 
-    std::invalid_argument("Operator not found.");
+    throw std::invalid_argument("Operator not found.");
 }
 
 }  // namespace operators
