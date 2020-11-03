@@ -1,6 +1,6 @@
 /*
  * ModSecurity, http://www.modsecurity.org/
- * Copyright (c) 2015 - 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
+ * Copyright (c) 2020 Trustwave Holdings, Inc. (http://www.trustwave.com/)
  *
  * You may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
@@ -13,7 +13,7 @@
  *
  */
 
-#include "src/operators/rx.h"
+#include "src/operators/rx_global.h"
 
 #include <string>
 #include <list>
@@ -27,7 +27,7 @@ namespace modsecurity {
 namespace operators {
 
 
-bool Rx::init(const std::string &arg, std::string *error) {
+bool RxGlobal::init(const std::string &arg, std::string *error) {
     if (m_string->m_containsMacro == false) {
         m_re = new Regex(m_param);
     }
@@ -36,7 +36,7 @@ bool Rx::init(const std::string &arg, std::string *error) {
 }
 
 
-bool Rx::evaluate(Transaction *transaction, RuleWithActions *rule,
+bool RxGlobal::evaluate(Transaction *transaction, RuleWithActions *rule,
     const std::string& input, std::shared_ptr<RuleMessage> ruleMessage) {
     Regex *re;
 
@@ -52,7 +52,7 @@ bool Rx::evaluate(Transaction *transaction, RuleWithActions *rule,
     }
 
     std::vector<Utils::SMatchCapture> captures;
-    re->searchOneMatch(input, captures);
+    re->searchGlobal(input, captures);
 
     if (rule && rule->hasCaptureAction() && transaction) {
         for (const Utils::SMatchCapture& capture : captures) {

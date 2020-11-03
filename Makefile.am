@@ -59,7 +59,7 @@ cppcheck:
 	@cppcheck -U YYSTYPE -U MBEDTLS_MD5_ALT -U MBEDTLS_SHA1_ALT \
 		-D MS_CPPCHECK_DISABLED_FOR_PARSER \
 		--suppressions-list=./test/cppcheck_suppressions.txt \
-		--enable=all \
+		--enable=warning,style,performance,portability,unusedFunction,missingInclude \
 		--inconclusive \
 		--template="warning: {file},{line},{severity},{id},{message}" \
 		-I headers -I . -I others -I src -I others/mbedtls -I src/parser \
@@ -158,6 +158,7 @@ TESTS+=test/test-cases/regression/issue-2099.json
 TESTS+=test/test-cases/regression/issue-2000.json
 TESTS+=test/test-cases/regression/issue-2111.json
 TESTS+=test/test-cases/regression/issue-2196.json
+TESTS+=test/test-cases/regression/issue-2423-msg-in-chain.json
 TESTS+=test/test-cases/regression/issue-394.json
 TESTS+=test/test-cases/regression/issue-849.json
 TESTS+=test/test-cases/regression/issue-960.json
@@ -171,6 +172,7 @@ TESTS+=test/test-cases/regression/operator-inpectFile.json
 TESTS+=test/test-cases/regression/operator-ipMatchFromFile.json
 TESTS+=test/test-cases/regression/operator-pm.json
 TESTS+=test/test-cases/regression/operator-rx.json
+TESTS+=test/test-cases/regression/operator-rxGlobal.json
 TESTS+=test/test-cases/regression/operator-UnconditionalMatch.json
 TESTS+=test/test-cases/regression/operator-validate-byte-range.json
 TESTS+=test/test-cases/regression/operator-verifycc.json
@@ -290,6 +292,7 @@ TESTS+=test/test-cases/secrules-language-tests/operators/noMatch.json
 TESTS+=test/test-cases/secrules-language-tests/operators/pmFromFile.json
 TESTS+=test/test-cases/secrules-language-tests/operators/pm.json
 TESTS+=test/test-cases/secrules-language-tests/operators/rx.json
+TESTS+=test/test-cases/secrules-language-tests/operators/rxGlobal.json
 TESTS+=test/test-cases/secrules-language-tests/operators/streq.json
 TESTS+=test/test-cases/secrules-language-tests/operators/strmatch.json
 TESTS+=test/test-cases/secrules-language-tests/operators/unconditionalMatch.json
